@@ -1,0 +1,44 @@
+- name: Disable kdump.service
+  service:
+    name: kdump
+    state: stopped
+    enabled: false
+
+- name: Install psacct package
+  yum:
+    name: psacct
+    state: present
+- name: Enable and start psacct service
+  service:
+    name: psacct
+    state: started
+    enabled: true
+
+- name: Set timezone to Australia/Adelaide
+  command: timedatectl set-timezone Australia/Adelaide
+
+- name: Configure NTP server in chrony
+  lineinfile:
+    path: /etc/chrony.conf
+    line: "server ntp.minerals.local burst"
+    insertafter: EOF
+
+- name: Install audispd-plugins package
+  dnf:
+    name: audispd-plugins
+    state: present
+
+- name: Install setroubleshoot-server package
+  yum:
+    name: setroubleshoot-server
+    state: present
+- name: Create setroubleshoot.conf file
+  copy:
+    dest: /etc/tmpfiles.d/setroubleshoot.conf
+    content: |
+      create new
+      \tD /var/run/setroubleshoot 0755 setroubleshoot root -     
+- name: Set file permissions
+  file:
+    path: /etc/tmpfiles.d/setroubleshoot.conf
+    mode: '0644'

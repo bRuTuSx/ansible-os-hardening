@@ -1,0 +1,35 @@
+---
+- name: Check if tmp.mount service exists
+  systemd:
+    name: tmp.mount
+    state: started
+  register: tmp_mount_state
+  ignore_errors: true
+
+- name: Enable and start tmp.mount service
+  systemd:
+    name: tmp.mount
+    state: started
+    enabled: true
+  when: tmp_mount_state.changed
+
+- name: Configure tmp.mount file
+  blockinfile:
+    path: /etc/systemd/system/local-fs.target.wants/tmp.mount
+    block: |
+      [Mount]
+      What=tmpfs
+      Where=/tmp
+      Type=tmpfs
+      Options=mode=1777,strictatime,noexec,nodev,nosuid
+  notify: restart_tmp_mount
+  when: tmp_mount_state.changed
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+  notify: restart_tmp_mount
+  when: tmp_mount_state.changed
+
+- name: Run handlers
+  meta: flush_handlers

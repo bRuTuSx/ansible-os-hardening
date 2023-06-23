@@ -1,0 +1,16 @@
+---
+firewall_package_redhat: "firewalld"
+firewall_package_ubuntu: "ufw"
+default_zone_redhat: "work"
+default_zone_ubuntu: ""
+open_tcp_ports_redhat:
+  - "9514"
+  - "514"
+open_udp_ports_redhat:
+  - "123"
+open_tcp_ports_ubuntu:
+  - "9514"
+  - "514"
+open_udp_ports_ubuntu:
+  - "123"
+source_subnet: "10.0.0.0/8"

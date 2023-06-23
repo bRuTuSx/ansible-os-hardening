@@ -1,0 +1,4 @@
+---
+- name: Generate grub.cfg
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  ignore_errors: true

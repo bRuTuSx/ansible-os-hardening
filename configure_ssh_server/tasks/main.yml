@@ -1,0 +1,105 @@
+---
+- name: Update sshd_config - Port
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Port'
+    line: 'Port 22'
+
+- name: Update sshd_config - ListenAddress
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?ListenAddress'
+    line: 'ListenAddress 0.0.0.0'
+
+- name: Update sshd_config - LogLevel
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?LogLevel'
+    line: 'LogLevel INFO'
+
+- name: Update sshd_config - LoginGraceTime
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?LoginGraceTime'
+    line: 'LoginGraceTime 1m'
+
+- name: Update sshd_config - PermitRootLogin
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Update sshd_config - MaxAuthTries
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?MaxAuthTries'
+    line: 'MaxAuthTries 3'
+
+- name: Update sshd_config - MaxSessions
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?MaxSessions'
+    line: 'MaxSessions 5'
+
+- name: Update sshd_config - IgnoreRhosts
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?IgnoreRhosts'
+    line: 'IgnoreRhosts yes'
+
+- name: Update sshd_config - PermitEmptyPasswords
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitEmptyPasswords'
+    line: 'PermitEmptyPasswords no'
+
+- name: Update sshd_config - AllowAgentForwarding
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AllowAgentForwarding'
+    line: 'AllowAgentForwarding no'
+
+- name: Update sshd_config - AllowTcpForwarding
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AllowTcpForwarding'
+    line: 'AllowTcpForwarding no'
+
+- name: Update sshd_config - PrintMotd
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PrintMotd'
+    line: 'PrintMotd no'
+
+- name: Update sshd_config - Compression
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Compression'
+    line: 'Compression no'
+
+- name: Update sshd_config - ClientAliveInterval
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?ClientAliveInterval'
+    line: 'ClientAliveInterval 1200'
+
+- name: Update sshd_config - ClientAliveCountMax
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?ClientAliveCountMax'
+    line: 'ClientAliveCountMax 0'
+
+- name: Update sshd_config - UseDNS
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?UseDNS'
+    line: 'UseDNS no'
+
+- name: Update sshd_config - Banner
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?Banner'
+    line: 'Banner none'
+
+  notify: restart sshd
+  

@@ -1,0 +1,21 @@
+#
+# Ansible Linux OS Hardening automation
+#
+---
+- name: Harden System Configuration
+  hosts: all
+  become: true
+  
+  roles:
+    - set_selinux
+    - configure_ssh_server
+    - umask_config
+    - polkitd_user_setup
+    - firewall_setup
+    - hardening_files
+    - create_policies
+    - setup_services
+    - tmp_mount
+    #- grub_config
+    - audit_rules
+    - timestamp

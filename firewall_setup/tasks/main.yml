@@ -1,0 +1,83 @@
+---
+
+- name: Install firewall package (RedHat/CentOS)
+  package:
+    name: "{{ firewall_package_redhat }}"
+    state: present
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+
+- name: Install UFW package (Ubuntu)
+  package:
+    name: "{{ firewall_package_ubuntu }}"
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Unmask and enable firewalld service (RedHat/CentOS)
+  systemd:
+    name: firewalld
+    state: started
+    enabled: true
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  notify: reload_firewall
+
+- name: Enable UFW service (Ubuntu)
+  service:
+    name: ufw
+    state: started
+    enabled: true
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Set default zone to work (RedHat/CentOS)
+  command: firewall-cmd --set-default-zone="{{ default_zone_redhat }}"
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  notify: reload_firewall
+
+- name: Add source to firewall (Firewalld - RedHat/CentOS)
+  command: "firewall-cmd --zone={{ default_zone_redhat }} --add-source={{ source_subnet }} --permanent"
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  notify: reload_firewall
+
+- name: Add open TCP ports in firewall (Firewalld - RedHat/CentOS)
+  command: "firewall-cmd --zone={{ default_zone_redhat }} --add-port={{ item }}/tcp --permanent"
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  loop: "{{ open_tcp_ports_redhat }}"
+  notify: reload_firewall
+
+- name: Add open UDP ports in firewall (Firewalld - RedHat/CentOS)
+  command: "firewall-cmd --zone={{ default_zone_redhat }} --add-port={{ item }}/udp --permanent"
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  loop: "{{ open_udp_ports_redhat }}"
+  notify: reload_firewall
+
+- name: Add source and open ports in firewall (UFW - Ubuntu)
+  shell: "ufw allow from {{ source_subnet }} to any port {{ item }}/tcp"
+  when: ansible_distribution == 'Ubuntu'
+  loop: "{{ open_ports_ubuntu }}"
+
+- name: Set log denied to all (Firewalld - RedHat/CentOS)
+  command: "firewall-cmd --set-log-denied=all"
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']
+  notify: reload_firewall
+
+- name: Enable UFW logging (Ubuntu)
+  shell: ufw logging on
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Enable UFW (Ubuntu)
+  command: ufw --force enable
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Run handlers
+  meta: flush_handlers
+
+- name: Check if Firewalld service is running
+  service:
+    name: firewalld
+    state: started
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']  
+  register: firewalld_status
+  changed_when: false
+
+- name: Print Firewalld service status
+  debug:
+    msg: "Firewalld service is {{ 'running' if firewalld_status.status == 'started' else 'not running' }}"

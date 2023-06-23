@@ -1,0 +1,32 @@
+---
+- name: Update umask in bashrc
+  lineinfile:
+    path: /etc/bashrc
+    regexp: '^(umask)'
+    line: 'umask 027'
+    backrefs: yes
+  when: "'/etc/bashrc' is file"
+
+- name: Update umask in csh.cshrc
+  lineinfile:
+    path: /etc/csh.cshrc
+    regexp: '^(umask)'
+    line: 'umask 027'
+    backrefs: yes
+  when: "'/etc/csh.cshrc' is file"
+
+- name: Update umask in profile
+  lineinfile:
+    path: /etc/profile
+    regexp: '^(umask)'
+    line: 'umask 027'
+    backrefs: yes
+  when: "'/etc/profile' is file"
+
+- name: Update umask in init.d functions
+  lineinfile:
+    path: /etc/init.d/functions
+    regexp: '^(umask)'
+    line: 'umask 027'
+    backrefs: yes
+  when: "'/etc/init.d/functions' is file"

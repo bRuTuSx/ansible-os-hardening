@@ -1,0 +1,38 @@
+---
+- name: Read file content
+  ansible.builtin.slurp:
+    path: /etc/default/grub
+  register: grub_file_content
+
+- name: Find line starting with GRUB_CMDLINE_LINUX
+  set_fact:
+    grub_cmdline_line: "{{ (grub_file_content.content | b64decode).split('\n') | select('match', '^GRUB_CMDLINE_LINUX=.*$') | list | first }}"
+
+- name: Assign current content to first variable
+  set_fact:
+    first_variable: "{{ grub_cmdline_line }}"
+
+- include_vars: vars/main.yml
+
+- name: Assign new content to second variable
+  set_fact:
+    second_variable: >-
+      {% if first_variable is defined %}
+      {% set delimiter = '' %}
+      {{ first_variable.rstrip('"') + delimiter + ' ' + updated_grub_cmdline_line + '"' }}
+      {% else %}
+      {{ updated_grub_cmdline_line + '"' }}
+      {% endif %}
+
+- name: Compare variables and update if necessary
+  ansible.builtin.debug:
+    msg: "The line is already up to date."
+  when: first_variable is defined and updated_grub_cmdline_line in first_variable
+
+- name: Update GRUB_CMDLINE_LINUX line in file
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    line: "GRUB_CMDLINE_LINUX={{ second_variable }}"
+    state: present
+  when: first_variable is not defined or updated_grub_cmdline_line not in first_variable
+  notify: Generate grub.cfg

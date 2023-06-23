@@ -1,0 +1,6 @@
+---
+- name: reload_firewall
+  systemd:
+    name: firewalld
+    state: restarted
+  when: ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux']

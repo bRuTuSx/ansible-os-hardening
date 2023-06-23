@@ -1,0 +1,2 @@
+---
+updated_grub_cmdline_line: "edd=off audit=1 audit_backlog_limit=8192"

@@ -1,0 +1,25 @@
+---
+- name: Check if timestamp file exists
+  stat:
+    path: /tmp/timestamp.txt
+  register: timestamp_file_status
+
+- name: Create or append to timestamp file
+  block:
+    - name: Create or append timestamp file
+      copy:
+        content: |
+          {{ lookup('template', 'timestamp.j2') }}
+        dest: /tmp/timestamp.txt
+        remote_src: no
+        backup: yes
+      when: not timestamp_file_status.stat.exists or timestamp_file_status.stat.isdir
+
+- name: Display content of timestamp file
+  shell: cat /tmp/timestamp.txt
+  register: timestamp_content
+  changed_when: false
+
+- name: Print timestamp file content
+  debug:
+    var: timestamp_content.stdout

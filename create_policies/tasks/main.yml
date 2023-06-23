@@ -1,0 +1,105 @@
+---
+- name: Create coredumps.sh file
+  copy:
+    dest: /etc/profile.d/coredumps.sh
+    content: "ulimit -S -c 0 > /dev/null 2>&1\n"
+- name: Set file permissions
+  file:
+    path: /etc/profile.d/coredumps.sh
+    mode: '0644'
+    
+- name: Create userns.conf file "Vulnerability (A heap-based buffer overflow) - CVE-2022-0185"
+  copy:
+    dest: /etc/sysctl.d/userns.conf
+    content: "user.max_user_namespaces=0"
+- name: Set file permissions
+  file:
+    path: /etc/sysctl.d/userns.conf
+    mode: '0644'
+
+- name: Create sessiontimeout.sh file
+  copy:
+    dest: /etc/profile.d/sessiontimeout.sh
+    content: "export TMOUT=1200"
+- name: Set file permissions
+  file:
+    path: /etc/profile.d/sessiontimeout.sh
+    mode: '0644'
+
+- name: Create timestamp.sh file
+  copy:
+    dest: /etc/profile.d/timestamp.sh
+    content: 'export HISTTIMEFORMAT="%Y-%m-%d %T "'
+- name: Set file mode for timestamp.sh
+  file:
+    path: /etc/profile.d/timestamp.sh
+    mode: '0644'
+
+- name: Remove contents of securetty file
+  copy:
+    dest: /etc/securetty
+    content: ""
+
+- name: Update journald.conf with required values
+  lineinfile:
+    path: /etc/systemd/journald.conf
+    line: "{{ item }}"
+    create: true
+  with_items:
+    - "Storage=persistent"
+    - "SystemMaxUse=1024M"
+    - "SystemKeepFree=512M"
+    - "SystemMaxFileSize=64M"
+- name: Update /etc/systemd/journald.conf permissions
+  file:
+    path: /etc/systemd/journald.conf
+    mode: '0644'
+
+- name: Update /etc/login.defs with required values
+  lineinfile:
+    path: /etc/login.defs
+    line: "{{ item }}"
+    create: true
+  with_items:
+    - "PASS_MAX_DAYS   90"
+    - "PASS_MIN_DAYS   1"
+    - "PASS_MIN_LEN    8"
+    - "PASS_WARN_AGE   14"
+    - "CREATE_HOME     yes"
+    - "ENCRYPT_METHOD SHA512"
+    - "FAILLOG_ENAB    yes"
+    - "FAIL_DELAY      2"
+- name: Update /etc/login.defs permissions
+  file:
+    path: /etc/login.defs
+    mode: '0644'
+
+- name: Update /etc/default/useradd with required values
+  lineinfile:
+    path: /etc/default/useradd
+    line: "{{ item }}"
+    create: true
+  with_items:
+    - "INACTIVE=30"
+    - "EXPIRE=90"
+- name: Update /etc/default/useradd permissions
+  file:
+    path: /etc/default/useradd
+    mode: '0644'
+
+- name: Create /etc/motd file
+  copy:
+    dest: /etc/motd
+    content: |
+      ###############################################################
+      #
+      # Welcome to OZ Minerals
+      # All connections are monitored and recorded.
+      # Unauthorised access prohibited.
+      # Disconnect IMMEDIATELY if you are not an authorized user!
+      #
+      ###############################################################
+- name: Update /etc/motd permissions
+  file:
+    path: /etc/motd
+    mode: '0644'

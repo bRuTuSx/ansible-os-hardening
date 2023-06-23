@@ -1,0 +1,19 @@
+---
+- name: Check if user exists
+  command: id polkitd
+  register: user_check
+  ignore_errors: true
+
+- name: Add monitor group
+  group:
+    name: monitor
+    state: present
+    system: yes
+  when: user_check.rc == 0
+
+- name: Add user to monitor group
+  user:
+    name: polkitd
+    groups: monitor
+    append: yes
+  when: user_check.rc == 0

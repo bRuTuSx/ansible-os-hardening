@@ -1,0 +1,7 @@
+OS version: {{ ansible_distribution }} {{ ansible_distribution_version }}
+
+IP address : {{ ansible_default_ipv4.address }}
+Hostname : {{ ansible_hostname }}
+
+Date when file has been created on: {{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:{{ ansible_date_time.second }}
+This system has been hardened.

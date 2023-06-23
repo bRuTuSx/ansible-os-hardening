@@ -1,0 +1,14 @@
+---
+- name: Read file content based on distribution
+  set_fact:
+    file_content: "{{ lookup('file', item) }}"
+  loop:
+    - "{{ 'audit.rules_RHEL' if ansible_distribution in ['RedHat', 'CentOS', 'AlmaLinux'] else 'audit.rules_Ubuntu' }}"
+
+- name: Update audit.rules file
+  copy:
+    dest: /etc/audit/rules.d/audit.rules
+    content: "{{ file_content }}"
+  notify:
+    - restart auditd
+    - restart dbus

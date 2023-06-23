@@ -1,0 +1,10 @@
+---
+- name: restart auditd
+  command:
+    cmd: service auditd restart
+  become: true
+
+- name: restart dbus
+  systemd:
+    name: dbus
+    state: restarted

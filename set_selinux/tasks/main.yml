@@ -1,0 +1,18 @@
+---
+    - name: Check SELinux status
+      command: getenforce
+      register: selinux_status
+      changed_when: false
+
+    - name: Set SELinux to permissive if enforcing or disabled
+      command: "setenforce 1"
+      when: selinux_status.stdout != "Enforcing" and selinux_status.stdout != "Disabled"
+      changed_when: true
+
+    - name: Update SELinux configuration to permissive
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: 'SELINUX=enforcing'
+      when: selinux_status.stdout != "Enforcing"
+      changed_when: true
